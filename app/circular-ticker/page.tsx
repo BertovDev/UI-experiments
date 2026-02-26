@@ -619,8 +619,10 @@ export default function CircularTickerPage() {
             }}
           >
 
-            {cards.map((card, i) => (
-              <div
+            {cards.map((card, i) => {
+              const data = card.data
+              if (!data) return null
+              return <div
                 key={card.id}
                 className="card-3d"
                 style={{
@@ -628,7 +630,6 @@ export default function CircularTickerPage() {
                   width: `${itemWidth}px`,
                   marginLeft: `-${itemWidth / 2}px`,
                   marginTop: `-${itemHeight / 2}px`,
-                  // now rotateY!
                   transform: `rotateY(${i * ANGLE}deg) translateZ(${RADIUS}px)`,
                 }}
               >
@@ -646,8 +647,8 @@ export default function CircularTickerPage() {
                   {/* Top specular highlight */}
                   <div className="pointer-events-none absolute top-0 left-0 right-0 h-px" style={{ background: `radial-gradient(ellipse at 50% 0%, ${itemBorderColor}, transparent 70%)`, opacity: itemHighlightOpacity }} />
                   <MorphingIcon
-                    baseIcon={card.data.icon}
-                    trend={card.data.trend}
+                    baseIcon={data.icon}
+                    trend={data.trend}
                     index={i}
                     rotation={springRotation}
                     ANGLE={ANGLE}
@@ -655,7 +656,7 @@ export default function CircularTickerPage() {
                   />
                   <div className="font-mono pt-0.5 min-w-[80px] text-center">
                     <ScramblingCryptoText
-                      coinData={card.data}
+                      coinData={data}
                       index={i}
                       rotation={springRotation}
                       ANGLE={ANGLE}
@@ -663,7 +664,7 @@ export default function CircularTickerPage() {
                   </div>
                 </div>
               </div>
-            ))}
+            })}
           </motion.div>
         </div>
 
