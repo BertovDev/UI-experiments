@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next"
 import { Geist } from "next/font/google"
 import { type PropsWithChildren, Suspense } from "react"
-import { Link } from "@/components/ui/link"
 import { themes } from "@/lib/styles/colors"
 import { fontsVariable } from "@/lib/styles/fonts"
 import AppData from "@/package.json"

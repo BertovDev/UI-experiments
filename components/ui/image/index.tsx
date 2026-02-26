@@ -18,7 +18,7 @@ import s from "./image.module.css"
  * Adds responsive sizing, aspect ratio support, and automatic blur placeholders.
  * Always use this component instead of next/image directly.
  */
-export type ImageProps = Omit<NextImageProps, "objectFit" | "alt"> & {
+export type ImageProps = Omit<NextImageProps, "objectFit"> & {
   /** CSS object-fit property for image positioning */
   objectFit?: CSSProperties["objectFit"]
   /** Display as block element (adds display: block) */
