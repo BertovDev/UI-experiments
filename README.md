@@ -1,6 +1,6 @@
-# Basement Next Starter
+# Experiments Workspace
 
-A production-ready Next.js starter with React 19, Tailwind CSS v4, TypeScript strict mode, and everything you need to build modern web applications.
+A Next.js workspace for building and iterating on interactive frontend experiments.
 
 ## Tech Stack
 
@@ -17,8 +17,8 @@ A production-ready Next.js starter with React 19, Tailwind CSS v4, TypeScript st
 ## Quick Start
 
 ```bash
-# Clone the template
-bunx degit basementstudio/next-starter my-project
+# Clone your repository
+git clone <your-repo-url> my-project
 
 # Install dependencies
 cd my-project && bun install
@@ -205,7 +205,7 @@ Configuration in `next.config.ts`:
 
 ### Vercel (Recommended)
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/basementstudio/next-starter)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new)
 
 ### Other Platforms
 

@@ -10,8 +10,8 @@ import { Geist_Mono } from "next/font/google"
 import { Header } from "@/components/layout/header"
 
 const APP_NAME = AppData.name
-const APP_DEFAULT_TITLE = "Basement Starter"
-const APP_TITLE_TEMPLATE = "%s - Basement Starter"
+const APP_DEFAULT_TITLE = "Experiments"
+const APP_TITLE_TEMPLATE = "%s - Experiments"
 const APP_DESCRIPTION = AppData.description
 const APP_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000"
 
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
     title: APP_DEFAULT_TITLE,
   },
   applicationName: APP_NAME,
-  authors: [{ name: "basement.studio", url: "https://basement.studio" }],
+  authors: [{ name: APP_DEFAULT_TITLE, url: APP_BASE_URL }],
   description: APP_DESCRIPTION,
   formatDetection: { telephone: false },
   metadataBase: new URL(APP_BASE_URL),

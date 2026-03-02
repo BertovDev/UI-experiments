@@ -558,7 +558,7 @@ export default function CircularTickerPage() {
   if (!isMounted) {
     return (
       <div className="flex min-h-screen items-center pointer-events-auto z-100 justify-center overflow-hidden bg-black px-3 sm:px-6">
-        <div className="pointer-events-auto fixed inset-y-20 right-5 z-40 w-[320px] max-w-[85vw]">
+        <div className="pointer-events-auto fixed inset-y-25 left-[22.5%] z-40 w-[320px] max-w-[85vw]">
           <Leva fill collapsed={true} />
         </div>
       </div>
@@ -567,7 +567,7 @@ export default function CircularTickerPage() {
 
   return (
     <div className="flex min-h-screen items-center pointer-events-auto  justify-center overflow-hidden bg-black px-3 sm:px-6">
-      <div className="pointer-events-auto fixed inset-y-20 right-5 z-40 w-[320px] max-w-[85vw]">
+      <div className="pointer-events-auto fixed inset-y-15 left-2 z-40 w-[320px] max-w-[85vw]">
         <Leva fill collapsed={true} />
       </div>
       <button

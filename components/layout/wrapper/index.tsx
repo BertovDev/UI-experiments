@@ -57,7 +57,6 @@ export function Wrapper({
       >
         {children}
       </main>
-      <Footer />
     </Theme>
   )
 }

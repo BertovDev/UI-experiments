@@ -20,7 +20,7 @@ export const Header = () => {
     <nav className="fixed top-0 z-50 w-full py-2">
       <div className="mx-auto flex items-center justify-between px-4">
         <Link href="/" className="flex items-center gap-2 font-bold text-xl">
-          Basement Experiments Starter
+          UI Experiments
         </Link>
         <NavigationMenu>
           <NavigationMenuList>
