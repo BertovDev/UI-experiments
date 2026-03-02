@@ -22,6 +22,7 @@ export default function Home() {
                   <Image
                     src={experiment.previewImage}
                     alt={`${experiment.name} preview`}
+                    loading="eager"
                     fill
                     className="transition duration-300 group-hover:scale-[1.02]"
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
