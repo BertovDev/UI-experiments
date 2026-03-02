@@ -23,7 +23,8 @@ export default function Home() {
                     src={experiment.previewImage}
                     alt={`${experiment.name} preview`}
                     fill
-                  // className="transition duration-300 group-hover:scale-[1.02]"
+                    className="transition duration-300 group-hover:scale-[1.02]"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
                   />
                   <div className="absolute inset-x-0 bottom-0 bg-black/70 px-3 py-2 font-mono text-sm uppercase">
                     {experiment.name}
