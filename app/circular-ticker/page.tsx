@@ -318,6 +318,24 @@ function ScramblingCryptoText({
 }
 
 export default function CircularTickerPage() {
+  const [isMounted, setIsMounted] = useState(false)
+  const [viewportSize, setViewportSize] = useState({ width: 0, height: 0 })
+  const [showSideGradients, setShowSideGradients] = useState(true)
+
+  useEffect(() => {
+    if (typeof window === "undefined") return
+
+    const updateViewportSize = () => {
+      setViewportSize({ width: window.innerWidth, height: window.innerHeight })
+    }
+
+    updateViewportSize()
+    setIsMounted(true)
+    window.addEventListener("resize", updateViewportSize)
+
+    return () => window.removeEventListener("resize", updateViewportSize)
+  }, [])
+
   const {
     numCards,
     itemHeight,
@@ -386,8 +404,8 @@ export default function CircularTickerPage() {
     gradientWidth,
     gradientOpacity,
   } = useControls("Side Gradients", {
-    gradientLeftX: { value: 471, min: -50, max: 3000, step: 1 },
-    gradientRightX: { value: 471, min: -50, max: 3000, step: 1 },
+    gradientLeftX: { value: 698, min: -50, max: 3000, step: 1 },
+    gradientRightX: { value: 698, min: -50, max: 3000, step: 1 },
     gradientWidth: { value: 20, min: 1, max: 20, step: 1 },
     gradientOpacity: { value: 1.0, min: 0, max: 1, step: 0.05 },
   })
@@ -402,6 +420,23 @@ export default function CircularTickerPage() {
   const RADIUS = itemWidth / 2 / Math.tan(Math.PI / numCards)
   // ANGLE per card
   const ANGLE = 360 / numCards
+  const TICKER_WIDTH = 1000
+  const TICKER_HEIGHT = 300
+  const SCENE_VERTICAL_PADDING = 80
+  const SCENE_WIDTH = TICKER_WIDTH
+  const SCENE_HEIGHT = TICKER_HEIGHT + SCENE_VERTICAL_PADDING
+  const viewportWidth = viewportSize.width || SCENE_WIDTH
+  const viewportHeight = viewportSize.height || SCENE_HEIGHT
+  const availableWidth = Math.max(320, viewportWidth - 24)
+  const availableHeight = Math.max(320, viewportHeight - 24)
+  const sceneScale = Math.min(
+    1,
+    availableWidth / SCENE_WIDTH,
+    availableHeight / SCENE_HEIGHT
+  )
+  const GRADIENT_EDGE_REFERENCE = 471
+  const gradientLeftOffset = gradientLeftX - GRADIENT_EDGE_REFERENCE
+  const gradientRightOffset = gradientRightX - GRADIENT_EDGE_REFERENCE
 
   // The raw rotation value in degrees
   const rotation = useMotionValue(0)
@@ -461,15 +496,16 @@ export default function CircularTickerPage() {
   const bind = useDrag(
     ({ active, delta: [dx], velocity: [vx], direction: [dirX] }) => {
       isDragging.current = active
+      const safeScale = sceneScale || 1
 
       if (active) {
         // Rotate the cylinder based on pixel dragged horizontally.
-        const rotationChange = (dx / itemWidth) * ANGLE
+        const rotationChange = (dx / safeScale / itemWidth) * ANGLE
         rotation.set(rotation.get() + rotationChange) // note the '+' for intuitive swipe direction
       } else {
         // Snap to nearest card upon release for momentum throw
         const currentRotation = rotation.get()
-        const momentum = vx * dragMomentumMultiplier * dirX
+        const momentum = (vx / safeScale) * dragMomentumMultiplier * dirX
         const targetRotation = currentRotation + momentum * ANGLE
         const nearestAngle = Math.round(targetRotation / ANGLE) * ANGLE
         rotation.set(nearestAngle)
@@ -519,9 +555,28 @@ export default function CircularTickerPage() {
   const topPathD = pointsToSmoothPath(topPoints)
   const bottomPathD = pointsToSmoothPath(bottomPoints)
 
+  if (!isMounted) {
+    return (
+      <div className="flex min-h-screen items-center pointer-events-auto z-100 justify-center overflow-hidden bg-black px-3 sm:px-6">
+        <div className="pointer-events-auto fixed inset-y-20 right-5 z-40 w-[320px] max-w-[85vw]">
+          <Leva fill collapsed={true} />
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-black">
-      <Leva collapsed={false} />
+    <div className="flex min-h-screen items-center pointer-events-auto  justify-center overflow-hidden bg-black px-3 sm:px-6">
+      <div className="pointer-events-auto fixed inset-y-20 right-5 z-40 w-[320px] max-w-[85vw]">
+        <Leva fill collapsed={true} />
+      </div>
+      <button
+        type="button"
+        onClick={() => setShowSideGradients((prev) => !prev)}
+        className="fixed right-4 bottom-4 z-40 rounded-md border border-white/20 bg-black/70 px-3 py-2 text-xs font-medium text-white backdrop-blur-sm transition hover:bg-black/90"
+      >
+        {showSideGradients ? "Hide side gradients" : "Show side gradients"}
+      </button>
       <style>{`
         .perspective-container {
           perspective: ${perspective}px;
@@ -544,18 +599,25 @@ export default function CircularTickerPage() {
       `}</style>
 
       {/* Outer wrapper to contain everything including the static center card */}
-      <div className="relative w-full max-w-6xl mx-auto flex justify-center">
+      <div
+        className="relative flex origin-center items-center justify-center"
+        style={{
+          width: `${SCENE_WIDTH}px`,
+          height: `${SCENE_HEIGHT}px`,
+          transform: `scale(${sceneScale})`,
+        }}
+      >
         {/* Ticker Container -> SWAPPED height/width logic roughly */}
         <div
-          className="perspective-container relative flex h-[300px] w-full max-w-5xl select-none items-center justify-center overflow-hidden rounded-2xl"
+          className="perspective-container relative flex h-[300px] w-full select-none items-center justify-center overflow-hidden rounded-2xl"
           {...bind()}
         >
           {/* The Curvature Border SVG */}
           <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center">
             <svg
-              width="1000"
-              height="300"
-              viewBox="-500 -150 1000 300"
+              width={TICKER_WIDTH}
+              height={TICKER_HEIGHT}
+              viewBox={`-${TICKER_WIDTH / 2} -${TICKER_HEIGHT / 2} ${TICKER_WIDTH} ${TICKER_HEIGHT}`}
               className="overflow-visible"
             >
               <path
@@ -575,37 +637,41 @@ export default function CircularTickerPage() {
             </svg>
           </div>
 
-          {/* Left blur/fadeout mask */}
-          <div
-            className="pointer-events-none absolute inset-y-0 z-20 w-40 bg-linear-to-r from-black/50 via-black/20 to-transparent backdrop-blur-[1px]"
-            style={{ left: `${gradientLeftX}px` }}
-          />
+          {showSideGradients ? (
+            <>
+              {/* Left blur/fadeout mask */}
+              <div
+                className="pointer-events-none absolute inset-y-0 z-20 w-40 bg-linear-to-r from-black/50 via-black/20 to-transparent backdrop-blur-[1px]"
+                style={{ left: `${gradientLeftOffset}px` }}
+              />
 
-          {/* Right blur/fadeout mask */}
-          <div
-            className="pointer-events-none absolute inset-y-0 z-20 w-40 bg-linear-to-l from-black/50 via-black/20 to-transparent backdrop-blur-[1px]"
-            style={{ right: `${gradientRightX}px` }}
-          />
+              {/* Right blur/fadeout mask */}
+              <div
+                className="pointer-events-none absolute inset-y-0 z-20 w-40 bg-linear-to-l from-black/50 via-black/20 to-transparent backdrop-blur-[1px]"
+                style={{ right: `${gradientRightOffset}px` }}
+              />
 
-          {/* Glowing side lines on container edges */}
-          <div
-            className="pointer-events-none absolute inset-y-0 z-100"
-            style={{
-              left: `${gradientLeftX}px`,
-              width: `${gradientWidth}px`,
-              opacity: gradientOpacity,
-              background: `linear-gradient(to bottom, transparent, #000000/10, transparent)`,
-            }}
-          />
-          <div
-            className="pointer-events-none absolute inset-y-0 z-100"
-            style={{
-              right: `${gradientRightX}px`,
-              width: `${gradientWidth}px`,
-              opacity: gradientOpacity,
-              background: `linear-gradient(to bottom, transparent, #000000/10, transparent)`,
-            }}
-          />
+              {/* Glowing side lines on container edges */}
+              <div
+                className="pointer-events-none absolute inset-y-0 z-100"
+                style={{
+                  left: `${gradientLeftOffset}px`,
+                  width: `${gradientWidth}px`,
+                  opacity: gradientOpacity,
+                  background: `linear-gradient(to bottom, transparent, #000000/10, transparent)`,
+                }}
+              />
+              <div
+                className="pointer-events-none absolute inset-y-0 z-100"
+                style={{
+                  right: `${gradientRightOffset}px`,
+                  width: `${gradientWidth}px`,
+                  opacity: gradientOpacity,
+                  background: `linear-gradient(to bottom, transparent, #000000/10, transparent)`,
+                }}
+              />
+            </>
+          ) : null}
 
 
           {/* Moving Content (The Cylinder) */}
